@@ -1,5 +1,8 @@
+# CMake
 build
 out
+
+# IDE
 .cache
 .idea
 .vs
