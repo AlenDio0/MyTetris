@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
+
 project(MyTetris LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -12,6 +13,10 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(MyTetris src/Main.cpp)
-target_compile_features(MyTetris PRIVATE cxx_std_17)
-target_link_libraries(MyTetris PRIVATE SFML::Graphics)
+file(GLOB SOURCES src/*.cpp)
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} "src/Grid.cpp")
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_17)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SFML::Graphics)

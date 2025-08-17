@@ -1,21 +1,8 @@
-#include <SFML/Graphics.hpp>
+#include "Tetris.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
-    auto window = sf::RenderWindow(sf::VideoMode({1920u, 1080u}), "CMake SFML Project");
-    window.setFramerateLimit(144);
+	Tetris::RunGame();
 
-    while (window.isOpen())
-    {
-        while (const std::optional event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-            {
-                window.close();
-            }
-        }
-
-        window.clear();
-        window.display();
-    }
+	return 0;
 }
