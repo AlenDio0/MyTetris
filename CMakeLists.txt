@@ -13,8 +13,8 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-file(GLOB SOURCES src/*.cpp)
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} "src/Grid.cpp")
+file(GLOB SOURCES src/*.*)
+add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
