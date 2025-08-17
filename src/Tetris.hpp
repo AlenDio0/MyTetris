@@ -4,7 +4,7 @@
 
 namespace Tetris
 {
-	constexpr struct
+	constexpr struct GameData
 	{
 		static inline uint32_t _CellSize = 40u;
 		static inline sf::Vector2u _GridSize = { 10u, 20u };
