@@ -21,4 +21,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_D
 
 target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_17)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SFML::Graphics)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sfml-main)
+
+if (WIN32)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SFML::Main)
+endif()
