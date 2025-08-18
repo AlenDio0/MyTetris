@@ -13,10 +13,12 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-file(GLOB SOURCES src/*.*)
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
+file(GLOB SOURCES src/*.cpp src/*.hpp)
+
+add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SOURCES})
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_17)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SFML::Graphics)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE SFML::Main)

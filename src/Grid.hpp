@@ -10,7 +10,16 @@ namespace Tetris
 	public:
 		Grid(sf::Vector2u size, float cellSize);
 
-		Status GetNextBlock() const;
+		const Status& GetNextBlock() const;
+
+		uint32_t GetScore() const;
+		bool isGameOver() const;
+
+		void HandleInput(const sf::Keyboard::Key& keyPressed);
+		void Update();
+		void Draw(sf::RenderTarget& target);
+	private:
+		Status CreateRandomBlock() const;
 
 		size_t GetIndex(sf::Vector2u position) const;
 		uint32_t GetCell(sf::Vector2u position) const;
@@ -27,10 +36,8 @@ namespace Tetris
 		void ClearCompletedRows();
 
 		void GameOver();
+		void Reset();
 
-		void HandleInput(const sf::Keyboard::Key& keyPressed);
-		void Update(float deltaTime);
-		void Draw(sf::RenderTarget& target);
 	private:
 		static int GetRandom(int max);
 	private:
@@ -38,8 +45,15 @@ namespace Tetris
 		const sf::Vector2u m_Size;
 		const float m_CellSize;
 
-		Status m_Current;
+		Status m_CurrentBlock;
+		Status m_NextBlock;
 
-		float m_TimeAccomulator;
+		sf::Clock m_GameClock;
+		float m_GameSpeed;
+
+		sf::Clock m_ScoreClock;
+		uint32_t m_Score;
+
+		bool m_IsGameOver;
 	};
 }

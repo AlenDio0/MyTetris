@@ -7,15 +7,15 @@ namespace Tetris
 {
 	struct Block
 	{
-		uint32_t _PossibleRotations;
+		uint32_t _PossibleRotations = 1;
 		std::array<sf::Vector2i, 3> _RelativePositions;
 	};
 
 	struct Status
 	{
 		sf::Vector2u _Position;
-		uint32_t _Type;
-		uint32_t _Rotation;
+		uint32_t _Type = 0;
+		uint32_t _Rotation = 0;
 	};
 
 	inline const std::array<Block, 8> g_Blocks = {
