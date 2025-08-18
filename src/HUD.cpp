@@ -1,5 +1,7 @@
 #include "HUD.hpp"
 
+#include <algorithm>
+
 namespace Tetris
 {
 	HUD::HUD(const Status& nextBlock, float cellSize, sf::FloatRect view)
