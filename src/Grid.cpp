@@ -4,7 +4,8 @@ namespace Tetris
 {
 	Grid::Grid(sf::Vector2u size, float cellSize)
 		: m_Size(size), m_CellSize(cellSize),
-		m_Grid(size.x* size.y, 0), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()), m_Score(0), m_GameSpeed(1.f), m_IsGameOver(false)
+		m_Grid(size.x* size.y, 0), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
+		m_GameSpeed(1.f), m_Score(0), m_IsGameOver(false)
 	{
 		AddBlock(m_CurrentBlock);
 	}
@@ -73,12 +74,6 @@ namespace Tetris
 	{
 		if (isGameOver())
 			return;
-
-		if (m_ScoreClock.getElapsedTime().asSeconds() >= 2.f)
-		{
-			m_ScoreClock.restart();
-			m_Score += 10 / m_GameSpeed;
-		}
 
 		if (m_GameClock.getElapsedTime().asSeconds() >= m_GameSpeed)
 			MoveDownBlock();
@@ -251,7 +246,13 @@ namespace Tetris
 			m_NextBlock = CreateRandomBlock();
 
 			if (!AddBlock(m_CurrentBlock))
+			{
 				GameOver();
+				return;
+			}
+
+			m_GameSpeed *= 0.99f;
+			m_Score += 10 / m_GameSpeed;
 		}
 	}
 
@@ -305,6 +306,8 @@ namespace Tetris
 				return 3000;
 			case 4:
 				return 12000;
+			default:
+				return 0;
 			}
 			}(rowsCleared) / m_GameSpeed;
 	}
@@ -317,11 +320,11 @@ namespace Tetris
 	void Grid::Reset()
 	{
 		m_IsGameOver = false;
-		m_Score = 0;
-		m_GameSpeed = 1.f;
 
+		m_GameSpeed = 1.f;
 		m_GameClock.restart();
-		m_ScoreClock.restart();
+
+		m_Score = 0;
 
 		m_Grid.assign((size_t)(m_Size.x * m_Size.y), 0);
 

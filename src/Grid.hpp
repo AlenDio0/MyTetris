@@ -37,7 +37,6 @@ namespace Tetris
 
 		void GameOver();
 		void Reset();
-
 	private:
 		static int GetRandom(int max);
 	private:
@@ -51,7 +50,6 @@ namespace Tetris
 		sf::Clock m_GameClock;
 		float m_GameSpeed;
 
-		sf::Clock m_ScoreClock;
 		uint32_t m_Score;
 
 		bool m_IsGameOver;
