@@ -7,7 +7,7 @@ namespace Tetris
 	HUD::HUD(const Status& nextBlock, float cellSize, sf::FloatRect view)
 		: m_NextBlock(&nextBlock), m_CellSize(cellSize), m_View(view),
 		m_BlockBackground({ m_CellSize * 5.f, m_CellSize * 5.f }),
-		m_Font("CascadiaMono.ttf"), m_StaticScoreText(m_Font, "Score", 60u), m_ScoreText(m_Font, "0", 50u)
+		m_Font("assets/CascadiaMono.ttf"), m_StaticScoreText(m_Font, "Score", 60u), m_ScoreText(m_Font, "0", 50u)
 	{
 		m_BlockBackground.setFillColor(sf::Color(30, 30, 40));
 		m_BlockBackground.setOutlineColor(sf::Color(100, 100, 120));
