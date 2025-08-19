@@ -5,10 +5,10 @@
 
 namespace Tetris
 {
-	class Grid
+	class Game
 	{
 	public:
-		Grid(sf::Vector2u size, float cellSize);
+		Game(sf::Vector2u size, float cellSize);
 
 		const Status& GetNextBlock() const;
 

@@ -1,8 +1,8 @@
-#include "Grid.hpp"
+#include "Game.hpp"
 
 namespace Tetris
 {
-	Grid::Grid(sf::Vector2u size, float cellSize)
+	Game::Game(sf::Vector2u size, float cellSize)
 		: m_Size(size), m_CellSize(cellSize),
 		m_Grid(size.x* size.y, 0), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
 		m_GameSpeed(1.f), m_Score(0), m_IsGameOver(false)
@@ -10,22 +10,22 @@ namespace Tetris
 		AddBlock(m_CurrentBlock);
 	}
 
-	const Status& Grid::GetNextBlock() const
+	const Status& Game::GetNextBlock() const
 	{
 		return m_NextBlock;
 	}
 
-	uint32_t Grid::GetScore() const
+	uint32_t Game::GetScore() const
 	{
 		return m_Score;
 	}
 
-	bool Grid::isGameOver() const
+	bool Game::isGameOver() const
 	{
 		return m_IsGameOver;
 	}
 
-	void Grid::HandleInput(const sf::Keyboard::Key& keyPressed)
+	void Game::HandleInput(const sf::Keyboard::Key& keyPressed)
 	{
 		if (keyPressed == sf::Keyboard::Key::Enter)
 		{
@@ -70,7 +70,7 @@ namespace Tetris
 			AddBlock(m_CurrentBlock);
 	}
 
-	void Grid::Update()
+	void Game::Update()
 	{
 		if (isGameOver())
 			return;
@@ -79,7 +79,7 @@ namespace Tetris
 			MoveDownBlock();
 	}
 
-	void Grid::Draw(sf::RenderTarget& target)
+	void Game::Draw(sf::RenderTarget& target)
 	{
 		sf::RectangleShape cellShape(sf::Vector2f(m_CellSize, m_CellSize));
 		cellShape.setOutlineColor(sf::Color::Black);
@@ -111,7 +111,7 @@ namespace Tetris
 		}
 	}
 
-	Status Grid::CreateRandomBlock() const
+	Status Game::CreateRandomBlock() const
 	{
 		Status status;
 
@@ -123,22 +123,22 @@ namespace Tetris
 	}
 
 
-	size_t Grid::GetIndex(sf::Vector2u position) const
+	size_t Game::GetIndex(sf::Vector2u position) const
 	{
 		return (size_t)position.y * m_Size.x + position.x;
 	}
 
-	uint32_t Grid::GetCell(sf::Vector2u position) const
+	uint32_t Game::GetCell(sf::Vector2u position) const
 	{
 		return m_Grid.at(GetIndex(position));
 	}
 
-	void Grid::SetCell(sf::Vector2u position, uint32_t type)
+	void Game::SetCell(sf::Vector2u position, uint32_t type)
 	{
 		m_Grid.at(GetIndex(position)) = type;
 	}
 
-	std::optional<std::array<sf::Vector2u, 4>> Grid::GetPositions(const Status& status) const
+	std::optional<std::array<sf::Vector2u, 4>> Game::GetPositions(const Status& status) const
 	{
 		const sf::Vector2u& position = status._Position;
 		if (position.x >= m_Size.x || position.y >= m_Size.y)
@@ -171,7 +171,7 @@ namespace Tetris
 		return positions;
 	}
 
-	std::optional<std::array<sf::Vector2u, 4>> Grid::GetFallPositions()
+	std::optional<std::array<sf::Vector2u, 4>> Game::GetFallPositions()
 	{
 		Status shadow = m_CurrentBlock;
 		RemoveBlock(m_CurrentBlock);
@@ -203,7 +203,7 @@ namespace Tetris
 		return GetPositions(shadow);
 	}
 
-	bool Grid::AddBlock(const Status& status)
+	bool Game::AddBlock(const Status& status)
 	{
 		auto positions = GetPositions(status);
 		if (!positions.has_value())
@@ -219,7 +219,7 @@ namespace Tetris
 		return true;
 	}
 
-	void Grid::RemoveBlock(const Status& status)
+	void Game::RemoveBlock(const Status& status)
 	{
 		auto positions = GetPositions(status);
 		if (!positions.has_value())
@@ -229,7 +229,7 @@ namespace Tetris
 			SetCell(position, 0);
 	}
 
-	void Grid::MoveDownBlock()
+	void Game::MoveDownBlock()
 	{
 		m_GameClock.restart();
 		RemoveBlock(m_CurrentBlock);
@@ -256,7 +256,7 @@ namespace Tetris
 		}
 	}
 
-	void Grid::HardDropBlock()
+	void Game::HardDropBlock()
 	{
 		auto fallPosition = GetFallPositions();
 		if (!fallPosition.has_value())
@@ -267,7 +267,7 @@ namespace Tetris
 		MoveDownBlock();
 	}
 
-	void Grid::ClearCompletedRows()
+	void Game::ClearCompletedRows()
 	{
 		uint32_t rowsCleared = 0;
 		for (uint32_t y = 0; y < m_Size.y; y++)
@@ -312,12 +312,12 @@ namespace Tetris
 			}(rowsCleared) / m_GameSpeed;
 	}
 
-	void Grid::GameOver()
+	void Game::GameOver()
 	{
 		m_IsGameOver = true;
 	}
 
-	void Grid::Reset()
+	void Game::Reset()
 	{
 		m_IsGameOver = false;
 
@@ -333,7 +333,7 @@ namespace Tetris
 		AddBlock(m_CurrentBlock);
 	}
 
-	int Grid::GetRandom(int max)
+	int Game::GetRandom(int max)
 	{
 		return (rand() % (std::max(max, 2) - 1)) + 1;
 	}
