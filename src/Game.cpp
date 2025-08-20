@@ -1,28 +1,18 @@
 #include "Game.hpp"
 
+#include <fstream>
+
 namespace Tetris
 {
-	Game::Game(sf::Vector2u size, float cellSize)
+	Game::Game(sf::Vector2u size, float cellSize, sf::FloatRect hudView)
 		: m_Size(size), m_CellSize(cellSize),
 		m_Grid(size.x* size.y, 0), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
-		m_GameSpeed(1.f), m_Score(0), m_IsGameOver(false)
+		m_HUD(cellSize, hudView), m_GameSpeed(1.f), m_Score(0), m_IsGameOver(false)
 	{
+		m_HUD.SetNextBlock(m_NextBlock);
 		AddBlock(m_CurrentBlock);
-	}
 
-	const Status& Game::GetNextBlock() const
-	{
-		return m_NextBlock;
-	}
-
-	uint32_t Game::GetScore() const
-	{
-		return m_Score;
-	}
-
-	bool Game::isGameOver() const
-	{
-		return m_IsGameOver;
+		m_HUD.SetHighScore(LoadHighScore());
 	}
 
 	void Game::HandleInput(const sf::Keyboard::Key& keyPressed)
@@ -33,7 +23,7 @@ namespace Tetris
 			return;
 		}
 
-		if (isGameOver())
+		if (m_IsGameOver)
 			return;
 
 		Status newStatus = m_CurrentBlock;
@@ -72,7 +62,7 @@ namespace Tetris
 
 	void Game::Update()
 	{
-		if (isGameOver())
+		if (m_IsGameOver)
 			return;
 
 		if (m_GameClock.getElapsedTime().asSeconds() >= m_GameSpeed)
@@ -80,6 +70,14 @@ namespace Tetris
 	}
 
 	void Game::Draw(sf::RenderTarget& target)
+	{
+		DrawGrid(target);
+		DrawShadow(target);
+
+		m_HUD.Draw(target);
+	}
+
+	void Game::DrawGrid(sf::RenderTarget& target) const
 	{
 		sf::RectangleShape cellShape(sf::Vector2f(m_CellSize, m_CellSize));
 		cellShape.setOutlineColor(sf::Color::Black);
@@ -95,6 +93,13 @@ namespace Tetris
 				target.draw(cellShape);
 			}
 		}
+	}
+
+	void Game::DrawShadow(sf::RenderTarget& target)
+	{
+		sf::RectangleShape cellShape(sf::Vector2f(m_CellSize, m_CellSize));
+		cellShape.setOutlineColor(sf::Color::Black);
+		cellShape.setOutlineThickness(-1.f);
 
 		auto shadowPositions = GetFallPositions();
 		if (shadowPositions.has_value())
@@ -252,7 +257,7 @@ namespace Tetris
 			}
 
 			m_GameSpeed *= 0.99f;
-			m_Score += 10 / m_GameSpeed;
+			AddScore(10 / m_GameSpeed);
 		}
 	}
 
@@ -295,7 +300,7 @@ namespace Tetris
 			}
 		}
 
-		m_Score += [](uint32_t rows) {
+		AddScore([](uint32_t rows) {
 			switch (rows)
 			{
 			case 1:
@@ -309,12 +314,15 @@ namespace Tetris
 			default:
 				return 0;
 			}
-			}(rowsCleared) / m_GameSpeed;
+			}(rowsCleared) / m_GameSpeed);
 	}
 
 	void Game::GameOver()
 	{
 		m_IsGameOver = true;
+
+		if (LoadHighScore() < m_Score)
+			SaveHighScore(m_Score);
 	}
 
 	void Game::Reset()
@@ -324,13 +332,45 @@ namespace Tetris
 		m_GameSpeed = 1.f;
 		m_GameClock.restart();
 
-		m_Score = 0;
+		AddScore(-m_Score);
+		m_HUD.SetHighScore(LoadHighScore());
 
 		m_Grid.assign((size_t)(m_Size.x * m_Size.y), 0);
 
 		m_CurrentBlock = std::move(m_NextBlock);
 		m_NextBlock = CreateRandomBlock();
 		AddBlock(m_CurrentBlock);
+	}
+
+	void Game::AddScore(uint32_t score)
+	{
+		m_Score += score;
+		m_HUD.SetScore(m_Score);
+	}
+
+	void Game::SaveHighScore(uint32_t highscore) const
+	{
+		std::ofstream file("highscore.txt");
+
+		if (!file.is_open())
+			return;
+
+		file << highscore;
+		file.close();
+	}
+
+	uint32_t Game::LoadHighScore() const
+	{
+		std::ifstream file("highscore.txt");
+
+		if (!file.is_open())
+			return 0;
+
+		uint32_t highscore = 0;
+		file >> highscore;
+		file.close();
+
+		return highscore;
 	}
 
 	int Game::GetRandom(int max)

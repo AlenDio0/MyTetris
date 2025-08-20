@@ -8,10 +8,11 @@ namespace Tetris
 	class HUD
 	{
 	public:
-		HUD(const Status& nextBlock, float cellSize, sf::FloatRect view);
+		HUD(float cellSize, sf::FloatRect view);
 
 		void SetNextBlock(const Status& status);
 		void SetScore(uint32_t score);
+		void SetHighScore(uint32_t highscore);
 
 		void Draw(sf::RenderTarget& target) const;
 	private:
@@ -27,6 +28,9 @@ namespace Tetris
 
 		sf::Text m_StaticScoreText;
 		sf::Text m_ScoreText;
+
+		sf::Text m_StaticHighScoreText;
+		sf::Text m_HighScoreText;
 
 	};
 }

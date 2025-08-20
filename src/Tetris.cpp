@@ -13,8 +13,8 @@ namespace Tetris
 		sf::RenderWindow window(sf::VideoMode(g_Data._ScreenSize), g_Data._WindowTitle, g_Data._WindowStyle);
 		window.setVerticalSyncEnabled(true);
 
-		Game game(g_Data._GridSize, g_Data._CellSize);
-		HUD hud(game.GetNextBlock(), g_Data._CellSize * 1.1f, sf::FloatRect({ (float)g_Data._ScreenSize.x - g_Data._RightSide, 0.f }, { (float)g_Data._RightSide, (float)g_Data._ScreenSize.y }));
+		sf::FloatRect hudView({ (float)g_Data._ScreenSize.x - g_Data._RightSide, 0.f }, { (float)g_Data._RightSide, (float)g_Data._ScreenSize.y });
+		Game game(g_Data._GridSize, g_Data._CellSize, hudView);
 
 		while (window.isOpen())
 		{
@@ -41,13 +41,9 @@ namespace Tetris
 
 			game.Update();
 
-			hud.SetNextBlock(game.GetNextBlock());
-			hud.SetScore(game.GetScore());
-
 			window.clear(g_Data._BackgroundColor);
 
 			game.Draw(window);
-			hud.Draw(window);
 
 			window.display();
 		}

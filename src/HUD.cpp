@@ -4,10 +4,12 @@
 
 namespace Tetris
 {
-	HUD::HUD(const Status& nextBlock, float cellSize, sf::FloatRect view)
-		: m_NextBlock(&nextBlock), m_CellSize(cellSize), m_View(view),
+	HUD::HUD(float cellSize, sf::FloatRect view)
+		: m_NextBlock(nullptr), m_CellSize(cellSize), m_View(view),
 		m_BlockBackground({ m_CellSize * 5.f, m_CellSize * 5.f }),
-		m_Font("assets/CascadiaMono.ttf"), m_StaticScoreText(m_Font, "Score", 60u), m_ScoreText(m_Font, "0", 50u)
+		m_Font("assets/CascadiaMono.ttf"),
+		m_StaticScoreText(m_Font, "Score", 50u), m_ScoreText(m_Font, "0", 50u),
+		m_StaticHighScoreText(m_Font, "HighScore", 50u), m_HighScoreText(m_Font, "0", 50u)
 	{
 		m_BlockBackground.setFillColor(sf::Color(30, 30, 40));
 		m_BlockBackground.setOutlineColor(sf::Color(100, 100, 120));
@@ -17,12 +19,22 @@ namespace Tetris
 
 		m_StaticScoreText.setOutlineThickness(-1.5f);
 		m_ScoreText.setOutlineThickness(-1.5f);
+		m_StaticHighScoreText.setOutlineThickness(-1.5f);
+		m_HighScoreText.setOutlineThickness(-1.5f);
 
-		float textX = m_View.getCenter().x - m_StaticScoreText.getGlobalBounds().size.x / 2.f;
-		float textY = m_View.position.y + 500.f;
-		m_StaticScoreText.setPosition({ textX, textY });
+		{
+			float textX = m_View.getCenter().x - m_StaticScoreText.getGlobalBounds().size.x / 2.f;
+			float textY = m_View.position.y + 400.f;
+			m_StaticScoreText.setPosition({ textX, textY });
+		}
+		{
+			float textX = m_View.getCenter().x - m_StaticHighScoreText.getGlobalBounds().size.x / 2.f;
+			float textY = m_StaticScoreText.getGlobalBounds().position.y + m_StaticScoreText.getGlobalBounds().size.y + 100.f;
+			m_StaticHighScoreText.setPosition({ textX, textY });
+		}
 
 		SetScore(0);
+		SetHighScore(0);
 	}
 
 	void HUD::SetNextBlock(const Status& status)
@@ -39,14 +51,25 @@ namespace Tetris
 		m_ScoreText.setPosition({ textX, textY });
 	}
 
+	void HUD::SetHighScore(uint32_t highscore)
+	{
+		m_HighScoreText.setString(std::to_string(highscore));
+
+		float textX = m_View.getCenter().x - m_HighScoreText.getGlobalBounds().size.x / 2.f;
+		float textY = m_StaticHighScoreText.getGlobalBounds().position.y + m_HighScoreText.getGlobalBounds().size.y + 10.f;
+		m_HighScoreText.setPosition({ textX, textY });
+	}
+
 	void HUD::Draw(sf::RenderTarget& target) const
 	{
 		target.draw(m_BlockBackground);
-
 		DrawNextBlock(target);
 
 		target.draw(m_StaticScoreText);
 		target.draw(m_ScoreText);
+
+		target.draw(m_StaticHighScoreText);
+		target.draw(m_HighScoreText);
 	}
 
 	void HUD::DrawNextBlock(sf::RenderTarget& target) const
