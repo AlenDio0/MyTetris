@@ -11,6 +11,8 @@ namespace Tetris
 	public:
 		Game(sf::Vector2u size, float cellSize, sf::FloatRect hudView);
 
+		bool IsRunning() const;
+
 		void HandleInput(const sf::Keyboard::Key& keyPressed);
 		void Update();
 		void Draw(sf::RenderTarget& target);

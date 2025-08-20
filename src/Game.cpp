@@ -15,6 +15,11 @@ namespace Tetris
 		m_HUD.SetHighScore(LoadHighScore());
 	}
 
+	bool Game::IsRunning() const
+	{
+		return !m_IsGameOver;
+	}
+
 	void Game::HandleInput(const sf::Keyboard::Key& keyPressed)
 	{
 		if (keyPressed == sf::Keyboard::Key::Enter)
@@ -72,7 +77,9 @@ namespace Tetris
 	void Game::Draw(sf::RenderTarget& target)
 	{
 		DrawGrid(target);
-		DrawShadow(target);
+
+		if (!m_IsGameOver)
+			DrawShadow(target);
 
 		m_HUD.Draw(target);
 	}

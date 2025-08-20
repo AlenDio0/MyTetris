@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "Game.hpp"
 
 namespace Tetris
 {
@@ -19,4 +20,5 @@ namespace Tetris
 	} g_Data;
 
 	void RunGame();
+	void OnEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window, Game& game);
 }
