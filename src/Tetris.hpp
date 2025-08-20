@@ -20,7 +20,7 @@ namespace Tetris
 		sf::RenderWindow m_Window;
 		Game m_Game;
 	private:
-		static constexpr inline struct GameData
+		static inline const struct GameData
 		{
 			static inline uint32_t _CellSize = 40u;
 			static inline sf::Vector2u _GridSize = { 10u, 20u };
