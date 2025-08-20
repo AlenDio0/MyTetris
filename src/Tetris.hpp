@@ -5,20 +5,33 @@
 
 namespace Tetris
 {
-	constexpr struct GameData
+	// Is a class necessary?
+	// Not really, but I wanted to simplify the old Tetris::RunGame() function with
+	// a constructor and an OnEvent() function that it can't be directly used by the Main.cpp.
+	class Engine
 	{
-		static inline uint32_t _CellSize = 40u;
-		static inline sf::Vector2u _GridSize = { 10u, 20u };
+	public:
+		Engine();
 
-		static inline uint32_t _RightSide = 300u;
+		void RunGame();
+	private:
+		void OnEvent(const std::optional<sf::Event>& event);
+	private:
+		sf::RenderWindow m_Window;
+		Game m_Game;
+	private:
+		static constexpr inline struct GameData
+		{
+			static inline uint32_t _CellSize = 40u;
+			static inline sf::Vector2u _GridSize = { 10u, 20u };
 
-		static inline sf::Vector2u _ScreenSize = { _GridSize.x * _CellSize + _RightSide, _GridSize.y * _CellSize };
-		static inline std::string _WindowTitle = "MyTetris";
-		static inline uint32_t _WindowStyle = sf::Style::Default;
+			static inline uint32_t _RightSide = 300u;
 
-		static inline sf::Color _BackgroundColor = sf::Color(50, 50, 60);
-	} g_Data;
+			static inline sf::Vector2u _ScreenSize = { _GridSize.x * _CellSize + _RightSide, _GridSize.y * _CellSize };
+			static inline std::string _WindowTitle = "MyTetris";
+			static inline uint32_t _WindowStyle = sf::Style::Default;
 
-	void RunGame();
-	void OnEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window, Game& game);
+			static inline sf::Color _BackgroundColor = sf::Color(50, 50, 60);
+		} s_Data;
+	};
 }

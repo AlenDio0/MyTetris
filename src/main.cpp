@@ -2,7 +2,8 @@
 
 int main(int argc, char* argv[])
 {
-	Tetris::RunGame();
+	Tetris::Engine engine;
+	engine.RunGame();
 
 	return 0;
 }

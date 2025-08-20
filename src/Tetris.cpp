@@ -6,58 +6,59 @@
 
 namespace Tetris
 {
-	void RunGame()
+	Engine::Engine()
+		: m_Window(sf::VideoMode(s_Data._ScreenSize), s_Data._WindowTitle, s_Data._WindowStyle)
+		, m_Game(s_Data._GridSize, s_Data._CellSize, sf::FloatRect(sf::Vector2f(s_Data._ScreenSize.x - s_Data._RightSide, 0.f), sf::Vector2f(s_Data._RightSide, s_Data._ScreenSize.y)))
 	{
-		srand(int(time(0)));
+		srand(unsigned int(time(0)));
 
-		sf::RenderWindow window(sf::VideoMode(g_Data._ScreenSize), g_Data._WindowTitle, g_Data._WindowStyle);
-		window.setVerticalSyncEnabled(true);
+		m_Window.setVerticalSyncEnabled(true);
+	}
 
-		sf::FloatRect hudView(sf::Vector2f(g_Data._ScreenSize.x - g_Data._RightSide, 0.f), sf::Vector2f(g_Data._RightSide, g_Data._ScreenSize.y));
-		Game game(g_Data._GridSize, g_Data._CellSize, hudView);
-
-		while (window.isOpen())
+	void Engine::RunGame()
+	{
+		while (m_Window.isOpen())
 		{
 			{
 				using namespace std::chrono_literals;
-				while (auto event = game.IsRunning() ? window.pollEvent() : window.waitEvent({ 20ms }))
-					OnEvent(event, window, game);
+				while (auto event = m_Game.IsRunning() ? m_Window.pollEvent() : m_Window.waitEvent({ 20ms }))
+					OnEvent(event);
 			}
 
-			game.Update();
+			m_Game.Update();
 
-			window.clear(g_Data._BackgroundColor);
+			m_Window.clear(s_Data._BackgroundColor);
 
-			game.Draw(window);
+			m_Game.Draw(m_Window);
 
-			window.display();
+			m_Window.display();
 		}
 	}
 
-	void OnEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window, Game& game)
+	void Engine::OnEvent(const std::optional<sf::Event>& event)
 	{
 		if (event->is<sf::Event::Closed>())
 		{
-			window.close();
+			m_Window.close();
 			return;
 		}
 
 		if (const auto* resize = event->getIf<sf::Event::Resized>())
 		{
-			sf::View view = window.getView();
+			sf::View view = m_Window.getView();
 			view.setSize((sf::Vector2f)resize->size);
-			window.setView(view);
+			m_Window.setView(view);
 		}
 
 		if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 		{
 			if (keyPressed->code == sf::Keyboard::Key::Escape)
 			{
-				window.close();
+				m_Window.close();
 				return;
 			}
 
-			game.HandleInput(keyPressed->code);
+			m_Game.HandleInput(keyPressed->code);
 		}
 	}
 }
