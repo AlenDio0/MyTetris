@@ -1,27 +1,28 @@
 #include "HUD.hpp"
 
 #include <algorithm>
+#include <math.h>
 
 namespace Tetris
 {
 	HUD::HUD(float cellSize, sf::FloatRect view)
 		: m_NextBlock(nullptr), m_CellSize(cellSize), m_View(view),
-		m_BlockBackground({ m_CellSize * 5.f, m_CellSize * 5.f }),
 		m_Font("assets/CascadiaMono.ttf"),
+		m_StaticNextBlockText(m_Font, "Next Block", 45u),
 		m_StaticScoreText(m_Font, "Score", 50u), m_ScoreText(m_Font, "0", 50u),
 		m_StaticHighScoreText(m_Font, "HighScore", 50u), m_HighScoreText(m_Font, "0", 50u)
 	{
-		m_BlockBackground.setFillColor(sf::Color(30, 30, 40));
-		m_BlockBackground.setOutlineColor(sf::Color(100, 100, 120));
-		m_BlockBackground.setOutlineThickness(-2.f);
-
-		m_BlockBackground.setPosition({ m_View.position.x + m_View.size.x / 2.f - m_BlockBackground.getSize().x / 2.f, m_View.position.y + 50.f });
-
+		m_StaticNextBlockText.setOutlineThickness(-1.5f);
 		m_StaticScoreText.setOutlineThickness(-1.5f);
 		m_ScoreText.setOutlineThickness(-1.5f);
 		m_StaticHighScoreText.setOutlineThickness(-1.5f);
 		m_HighScoreText.setOutlineThickness(-1.5f);
 
+		{
+			float textX = m_View.getCenter().x - m_StaticNextBlockText.getGlobalBounds().size.x / 2.f;
+			float textY = m_View.position.y + 75.f;
+			m_StaticNextBlockText.setPosition({ textX, textY });
+		}
 		{
 			float textX = m_View.getCenter().x - m_StaticScoreText.getGlobalBounds().size.x / 2.f;
 			float textY = m_View.position.y + 400.f;
@@ -62,7 +63,7 @@ namespace Tetris
 
 	void HUD::Draw(sf::RenderTarget& target) const
 	{
-		target.draw(m_BlockBackground);
+		target.draw(m_StaticNextBlockText);
 		DrawNextBlock(target);
 
 		target.draw(m_StaticScoreText);
@@ -74,8 +75,15 @@ namespace Tetris
 
 	void HUD::DrawNextBlock(sf::RenderTarget& target) const
 	{
-		std::array<sf::Vector2i, 4> positions = { sf::Vector2i(0, 0) };
+		std::array<uint32_t, s_GridSize* s_GridSize> nextBlockGrid{};
+		nextBlockGrid.fill(0);
 
+		sf::RectangleShape cellShape(sf::Vector2f(m_CellSize, m_CellSize));
+		cellShape.setOutlineColor(sf::Color::Black);
+		cellShape.setOutlineThickness(-1.f);
+
+		const sf::Vector2u gridCenter(s_GridSize / 2, s_GridSize / 2);
+		nextBlockGrid[gridCenter.y * s_GridSize + gridCenter.x] = m_NextBlock->_Type;
 		const Block& block = g_Blocks[m_NextBlock->_Type];
 		for (size_t i = 0; i < block._RelativePositions.size(); i++)
 		{
@@ -91,32 +99,29 @@ namespace Tetris
 				rotateRelativePosition.y = -tempX;
 			}
 
-			positions[i + 1] = rotateRelativePosition;
+			sf::Vector2u newPosition(gridCenter + (sf::Vector2u)rotateRelativePosition);
+			nextBlockGrid[newPosition.y * s_GridSize + newPosition.x] = m_NextBlock->_Type;
 		}
 
-		std::sort(positions.begin(), positions.end(), [](const sf::Vector2i& a, const sf::Vector2i& b) {
-			return a.x > b.x;
-			});
-		int maxX = positions.at(0).x != 0 ? positions.at(0).x : 1;
-
-		std::sort(positions.begin(), positions.end(), [](const sf::Vector2i& a, const sf::Vector2i& b) {
-			return a.y > b.y;
-			});
-		int maxY = positions.at(0).y != 0 ? positions.at(0).y : 1;
-
-		float x = m_BlockBackground.getGlobalBounds().getCenter().x - (maxX * m_CellSize) / 2.f;
-		float y = m_BlockBackground.getGlobalBounds().getCenter().y - (maxY * m_CellSize) / 2.f;
-
-		sf::RectangleShape cellShape(sf::Vector2f(m_CellSize, m_CellSize));
-		cellShape.setFillColor(g_BlockColors[m_NextBlock->_Type]);
-		cellShape.setOutlineColor(sf::Color::Black);
-		cellShape.setOutlineThickness(-1.f);
-
-		for (sf::Vector2i relativePosition : positions)
+		float offsetX = m_View.getCenter().x - ((s_GridSize / 2.f) * m_CellSize);
+		float offsetY = m_StaticNextBlockText.getGlobalBounds().position.y + m_StaticNextBlockText.getGlobalBounds().size.y + 10.f;
+		for (size_t i = 0; i < nextBlockGrid.size(); i++)
 		{
-			cellShape.setPosition({ x + (relativePosition.x * m_CellSize), y + (relativePosition.y * m_CellSize) });
+			float x = offsetX + (float)((i % s_GridSize) * m_CellSize);
+			float y = offsetY + (float)(floor(i / s_GridSize) * m_CellSize);
+
+			cellShape.setPosition({ x, y });
+			cellShape.setFillColor(g_BlockColors[nextBlockGrid[i]]);
 
 			target.draw(cellShape);
 		}
+
+		sf::RectangleShape borderShape(sf::Vector2f(m_CellSize * s_GridSize, m_CellSize * s_GridSize));
+		borderShape.setPosition({ offsetX, offsetY });
+		borderShape.setFillColor(sf::Color::Transparent);
+		borderShape.setOutlineColor(sf::Color(70, 70, 100));
+		borderShape.setOutlineThickness(1.f);
+
+		target.draw(borderShape);
 	}
 }

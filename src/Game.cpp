@@ -339,6 +339,8 @@ namespace Tetris
 		m_GameSpeed = 1.f;
 		m_GameClock.restart();
 
+		if (LoadHighScore() < m_Score)
+			SaveHighScore(m_Score);
 		AddScore(-m_Score);
 		m_HUD.SetHighScore(LoadHighScore());
 
