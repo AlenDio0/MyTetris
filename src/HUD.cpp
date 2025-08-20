@@ -82,29 +82,13 @@ namespace Tetris
 		cellShape.setOutlineColor(sf::Color::Black);
 		cellShape.setOutlineThickness(-1.f);
 
-		const sf::Vector2u gridCenter(s_GridSize / 2, s_GridSize / 2);
-		nextBlockGrid[gridCenter.y * s_GridSize + gridCenter.x] = m_NextBlock->_Type;
-		const Block& block = g_Blocks[m_NextBlock->_Type];
-		for (size_t i = 0; i < block._RelativePositions.size(); i++)
-		{
-			const uint32_t rotationState = m_NextBlock->_Rotation % block._PossibleRotations;
+		size_t gridCenter = ceil(s_GridSize / 2);
+		auto positions = Utils::GetRelativePositions(*m_NextBlock);
+		for (sf::Vector2i position : positions)
+			nextBlockGrid[((gridCenter + position.y) * s_GridSize) + (gridCenter + position.x)] = m_NextBlock->_Type;
 
-			sf::Vector2i rotateRelativePosition = block._RelativePositions[i];
-
-			for (size_t j = 0; j < rotationState; j++)
-			{
-				int tempX = rotateRelativePosition.x;
-
-				rotateRelativePosition.x = rotateRelativePosition.y;
-				rotateRelativePosition.y = -tempX;
-			}
-
-			sf::Vector2u newPosition(gridCenter + (sf::Vector2u)rotateRelativePosition);
-			nextBlockGrid[newPosition.y * s_GridSize + newPosition.x] = m_NextBlock->_Type;
-		}
-
-		float offsetX = m_View.getCenter().x - ((s_GridSize / 2.f) * m_CellSize);
-		float offsetY = m_StaticNextBlockText.getGlobalBounds().position.y + m_StaticNextBlockText.getGlobalBounds().size.y + 10.f;
+		const float offsetX = m_View.getCenter().x - ((s_GridSize / 2.f) * m_CellSize);
+		const float offsetY = m_StaticNextBlockText.getGlobalBounds().position.y + m_StaticNextBlockText.getGlobalBounds().size.y + 10.f;
 		for (size_t i = 0; i < nextBlockGrid.size(); i++)
 		{
 			float x = offsetX + (float)((i % s_GridSize) * m_CellSize);

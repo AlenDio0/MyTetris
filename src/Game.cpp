@@ -152,32 +152,17 @@ namespace Tetris
 
 	std::optional<std::array<sf::Vector2u, 4>> Game::GetPositions(const Status& status) const
 	{
-		const sf::Vector2u& position = status._Position;
-		if (position.x >= m_Size.x || position.y >= m_Size.y)
-			return {};
+		const sf::Vector2u& blockPosition = status._Position;
 
-		std::array<sf::Vector2u, 4> positions = { position };
-
-		const Block& block = g_Blocks[status._Type];
-		for (size_t i = 0; i < block._RelativePositions.size(); i++)
+		std::array<sf::Vector2u, 4> positions;
+		auto relativePositions = Utils::GetRelativePositions(status);
+		for (size_t i = 0; i < relativePositions.size(); i++)
 		{
-			const uint32_t rotationState = status._Rotation % block._PossibleRotations;
-
-			sf::Vector2i rotateRelativePosition = block._RelativePositions[i];
-
-			for (size_t j = 0; j < rotationState; j++)
-			{
-				int tempX = rotateRelativePosition.x;
-
-				rotateRelativePosition.x = rotateRelativePosition.y;
-				rotateRelativePosition.y = -tempX;
-			}
-
-			sf::Vector2u newPosition(position.x + rotateRelativePosition.x, position.y + rotateRelativePosition.y);
+			sf::Vector2u newPosition(blockPosition.x + relativePositions[i].x, blockPosition.y + relativePositions[i].y);
 			if (newPosition.x >= m_Size.x || newPosition.y >= m_Size.y)
-				return {};
+				return std::nullopt;
 
-			positions[i + 1] = newPosition;
+			positions[i] = newPosition;
 		}
 
 		return positions;

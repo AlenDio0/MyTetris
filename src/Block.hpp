@@ -18,7 +18,7 @@ namespace Tetris
 		uint32_t _Rotation = 0;
 	};
 
-	inline const std::array<Block, 8> g_Blocks = {
+	constexpr inline std::array<Block, 8> g_Blocks = {
 		Block{ 1, { { { 0, 0 }, { 0, 0 }, { 0, 0 } } } },		// None
 		Block{ 2, { { { 0, -1 }, { 0, 1 }, { 0, 2 } } } },		// I
 		Block{ 4, { { { 0, -1 }, { 0, 1 }, { 1, 1 } } } },		// L
@@ -29,8 +29,8 @@ namespace Tetris
 		Block{ 1, { { { 1, 0 }, { 1, -1 }, { 0, -1 } } } }		// O
 	};
 
-	inline const std::array<sf::Color, 8> g_BlockColors = {
-		sf::Color(30, 30, 40),	// None
+	constexpr inline std::array<const sf::Color, 8> g_BlockColors = {
+		sf::Color(30, 30, 40),		// None
 		sf::Color(0, 255, 255),		// I
 		sf::Color(255, 165, 0),		// L
 		sf::Color(0, 0, 255),		// J
@@ -39,4 +39,9 @@ namespace Tetris
 		sf::Color(128, 0, 128),		// T
 		sf::Color(255, 255, 0)		// O
 	};
+
+	namespace Utils
+	{
+		std::array<sf::Vector2i, 4> GetRelativePositions(const Status& status);
+	}
 }
