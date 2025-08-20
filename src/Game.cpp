@@ -1,6 +1,7 @@
 #include "Game.hpp"
 
 #include <fstream>
+#include <algorithm>
 
 namespace Tetris
 {
@@ -180,15 +181,8 @@ namespace Tetris
 			if (!positions.has_value())
 				break;
 
-			bool collision = false;
-			for (const sf::Vector2u& position : positions.value())
-			{
-				if (GetCell(position))
-				{
-					collision = true;
-					break;
-				}
-			}
+			bool collision = std::any_of(positions.value().begin(), positions.value().end(),
+				[&](const sf::Vector2u& position) { return position.y >= m_Size.y || GetCell(position); });
 
 			if (collision)
 				break;
@@ -206,9 +200,9 @@ namespace Tetris
 		if (!positions.has_value())
 			return false;
 
-		for (const sf::Vector2u& position : positions.value())
-			if (GetCell(position))
-				return false;
+		if (std::any_of(positions.value().begin(), positions.value().end(),
+			[&](const sf::Vector2u& position) { return position.y >= m_Size.y || GetCell(position); }))
+			return false;
 
 		for (const sf::Vector2u& position : positions.value())
 			SetCell(position, status._Type);
