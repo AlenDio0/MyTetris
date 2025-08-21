@@ -155,7 +155,7 @@ namespace Tetris
 	void Game::SetCell(sf::Vector2u position, uint32_t type)
 	{
 		size_t index = GetIndex(position);
-		if (index > m_Grid.size())
+		if (index >= m_Grid.size())
 			return;
 
 		m_Grid.at(index) = type;
