@@ -145,12 +145,20 @@ namespace Tetris
 
 	uint32_t Game::GetCell(sf::Vector2u position) const
 	{
-		return m_Grid.at(GetIndex(position));
+		size_t index = GetIndex(position);
+		if (index >= m_Grid.size())
+			return 0;
+
+		return m_Grid.at(index);
 	}
 
 	void Game::SetCell(sf::Vector2u position, uint32_t type)
 	{
-		m_Grid.at(GetIndex(position)) = type;
+		size_t index = GetIndex(position);
+		if (index > m_Grid.size())
+			return;
+
+		m_Grid.at(index) = type;
 	}
 
 	std::optional<std::array<sf::Vector2u, 4>> Game::GetPositions(const Status& status) const
@@ -287,9 +295,9 @@ namespace Tetris
 				for (uint32_t x = 0; x < m_Size.x; x++)
 					SetCell({ x, y }, 0);
 
-				for (uint32_t row = y; row > 1; row--)
+				for (int row = y; row >= 0; row--)
 					for (uint32_t x = 0; x < m_Size.x; x++)
-						SetCell({ x, row }, GetCell({ x, row - 1 }));
+						SetCell({ x, (uint32_t)row }, GetCell({ x, (uint32_t)row - 1 }));
 			}
 		}
 
