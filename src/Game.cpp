@@ -3,6 +3,8 @@
 #include <fstream>
 #include <algorithm>
 
+#include <iostream>
+
 namespace Tetris
 {
 	Game::Game(sf::Vector2u size, float cellSize, sf::FloatRect hudView)
@@ -75,7 +77,7 @@ namespace Tetris
 			MoveDownBlock();
 	}
 
-	void Game::Draw(sf::RenderTarget& target)
+	void Game::Draw(sf::RenderTarget& target) const
 	{
 		DrawGrid(target);
 
@@ -103,7 +105,7 @@ namespace Tetris
 		}
 	}
 
-	void Game::DrawShadow(sf::RenderTarget& target)
+	void Game::DrawShadow(sf::RenderTarget& target) const
 	{
 		sf::RectangleShape cellShape(sf::Vector2f(m_CellSize, m_CellSize));
 		cellShape.setOutlineColor(sf::Color::Black);
@@ -169,29 +171,34 @@ namespace Tetris
 		return positions;
 	}
 
-	std::optional<std::array<sf::Vector2u, 4>> Game::GetFallPositions()
+	std::optional<std::array<sf::Vector2u, 4>> Game::GetFallPositions() const
 	{
-		Status shadow = m_CurrentBlock;
-		RemoveBlock(m_CurrentBlock);
+		auto currentPositions = GetPositions(m_CurrentBlock);
+		if (!currentPositions.has_value())
+			return std::nullopt;
+
+		Status fallBlock = m_CurrentBlock;
+
 		while (true)
 		{
-			Status nextShadow = shadow;
-			nextShadow._Position.y++;
-			auto positions = GetPositions(nextShadow);
+			Status nextFall = fallBlock;
+			nextFall._Position.y++;
+			auto positions = GetPositions(nextFall);
 			if (!positions.has_value())
 				break;
 
-			bool collision = std::any_of(positions.value().begin(), positions.value().end(),
-				[&](const sf::Vector2u& position) { return position.y >= m_Size.y || GetCell(position); });
+			bool collision = std::any_of(positions->begin(), positions->end(), [&](const sf::Vector2u& position) {
+				return position.y >= m_Size.y || GetCell(position) &&
+					!std::any_of(currentPositions->begin(), currentPositions->end(), [&](const sf::Vector2u& currentPosition) {
+					return currentPosition == position; }); });
 
 			if (collision)
 				break;
 
-			shadow = nextShadow;
+			fallBlock = nextFall;
 		}
-		AddBlock(m_CurrentBlock);
 
-		return GetPositions(shadow);
+		return GetPositions(fallBlock);
 	}
 
 	bool Game::AddBlock(const Status& status)

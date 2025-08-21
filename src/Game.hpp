@@ -15,10 +15,10 @@ namespace Tetris
 
 		void HandleInput(const sf::Keyboard::Key& keyPressed);
 		void Update();
-		void Draw(sf::RenderTarget& target);
+		void Draw(sf::RenderTarget& target) const;
 	private:
 		void DrawGrid(sf::RenderTarget& target) const;
-		void DrawShadow(sf::RenderTarget& target);
+		void DrawShadow(sf::RenderTarget& target) const;
 
 		Status CreateRandomBlock() const;
 
@@ -27,7 +27,7 @@ namespace Tetris
 		void SetCell(sf::Vector2u position, uint32_t type);
 
 		std::optional<std::array<sf::Vector2u, 4>> GetPositions(const Status& status) const;
-		std::optional<std::array<sf::Vector2u, 4>> GetFallPositions();
+		std::optional<std::array<sf::Vector2u, 4>> GetFallPositions() const;
 
 		bool AddBlock(const Status& status);
 		void RemoveBlock(const Status& status);
