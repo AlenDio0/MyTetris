@@ -28,10 +28,12 @@ namespace Tetris
 			static inline uint32_t _RightSide = 300u;
 
 			static inline sf::Vector2u _ScreenSize = { _GridSize.x * _CellSize + _RightSide, _GridSize.y * _CellSize };
-			static inline std::string _WindowTitle = "MyTetris";
+			static inline const char* _WindowTitle = "MyTetris";
 			static inline uint32_t _WindowStyle = sf::Style::Default;
 
 			static inline sf::Color _BackgroundColor = sf::Color(50, 50, 60);
+
+			static inline const char* _HighScoreFileName = "highscore.txt";
 		} s_Data;
 	};
 }

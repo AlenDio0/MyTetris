@@ -9,7 +9,7 @@ namespace Tetris
 	class Game
 	{
 	public:
-		Game(sf::Vector2u size, float cellSize, sf::FloatRect hudView);
+		Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName);
 
 		bool IsRunning() const;
 
@@ -57,6 +57,7 @@ namespace Tetris
 		float m_GameSpeed;
 
 		uint32_t m_Score;
+		std::string_view m_HighScoreFileName;
 
 		bool m_IsGameOver;
 	};

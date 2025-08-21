@@ -7,10 +7,10 @@
 
 namespace Tetris
 {
-	Game::Game(sf::Vector2u size, float cellSize, sf::FloatRect hudView)
-		: m_Size(size), m_CellSize(cellSize),
+	Game::Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName)
+		: m_Size(size), m_CellSize(cellSize), m_HUD(cellSize, hudCenterAxisX),
 		m_Grid(size.x* size.y, 0), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
-		m_HUD(cellSize, hudView), m_GameSpeed(1.f), m_Score(0), m_IsGameOver(false)
+		m_GameSpeed(1.f), m_Score(0), m_HighScoreFileName(), m_IsGameOver(false)
 	{
 		m_HUD.SetNextBlock(m_NextBlock);
 		AddBlock(m_CurrentBlock);

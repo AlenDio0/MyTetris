@@ -5,8 +5,8 @@
 
 namespace Tetris
 {
-	HUD::HUD(float cellSize, sf::FloatRect view)
-		: m_NextBlock(nullptr), m_CellSize(cellSize), m_View(view),
+	HUD::HUD(float cellSize, float centerAxisX)
+		: m_NextBlock(nullptr), m_CellSize(cellSize), m_CenterAxisX(centerAxisX),
 		m_Font("assets/CascadiaMono.ttf"),
 		m_StaticNextBlockText(m_Font, "Next Block", 45u),
 		m_StaticScoreText(m_Font, "Score", 50u), m_ScoreText(m_Font, "0", 50u),
@@ -19,17 +19,17 @@ namespace Tetris
 		m_HighScoreText.setOutlineThickness(-1.5f);
 
 		{
-			float textX = m_View.getCenter().x - m_StaticNextBlockText.getGlobalBounds().size.x / 2.f;
-			float textY = m_View.position.y + 75.f;
+			float textX = m_CenterAxisX - m_StaticNextBlockText.getGlobalBounds().size.x / 2.f;
+			float textY = 75.f;
 			m_StaticNextBlockText.setPosition({ textX, textY });
 		}
 		{
-			float textX = m_View.getCenter().x - m_StaticScoreText.getGlobalBounds().size.x / 2.f;
-			float textY = m_View.position.y + 400.f;
+			float textX = m_CenterAxisX - m_StaticScoreText.getGlobalBounds().size.x / 2.f;
+			float textY = 400.f;
 			m_StaticScoreText.setPosition({ textX, textY });
 		}
 		{
-			float textX = m_View.getCenter().x - m_StaticHighScoreText.getGlobalBounds().size.x / 2.f;
+			float textX = m_CenterAxisX - m_StaticHighScoreText.getGlobalBounds().size.x / 2.f;
 			float textY = m_StaticScoreText.getGlobalBounds().position.y + m_StaticScoreText.getGlobalBounds().size.y + 100.f;
 			m_StaticHighScoreText.setPosition({ textX, textY });
 		}
@@ -47,7 +47,7 @@ namespace Tetris
 	{
 		m_ScoreText.setString(std::to_string(score));
 
-		float textX = m_View.getCenter().x - m_ScoreText.getGlobalBounds().size.x / 2.f;
+		float textX = m_CenterAxisX - m_ScoreText.getGlobalBounds().size.x / 2.f;
 		float textY = m_StaticScoreText.getGlobalBounds().position.y + m_StaticScoreText.getGlobalBounds().size.y + 10.f;
 		m_ScoreText.setPosition({ textX, textY });
 	}
@@ -56,7 +56,7 @@ namespace Tetris
 	{
 		m_HighScoreText.setString(std::to_string(highscore));
 
-		float textX = m_View.getCenter().x - m_HighScoreText.getGlobalBounds().size.x / 2.f;
+		float textX = m_CenterAxisX - m_HighScoreText.getGlobalBounds().size.x / 2.f;
 		float textY = m_StaticHighScoreText.getGlobalBounds().position.y + m_HighScoreText.getGlobalBounds().size.y + 10.f;
 		m_HighScoreText.setPosition({ textX, textY });
 	}
@@ -87,7 +87,7 @@ namespace Tetris
 		for (sf::Vector2i position : positions)
 			nextBlockGrid[((gridCenter + position.y) * s_GridSize) + (gridCenter + position.x)] = m_NextBlock->_Type;
 
-		const float offsetX = m_View.getCenter().x - ((s_GridSize / 2.f) * m_CellSize);
+		const float offsetX = m_CenterAxisX - ((s_GridSize / 2.f) * m_CellSize);
 		const float offsetY = m_StaticNextBlockText.getGlobalBounds().position.y + m_StaticNextBlockText.getGlobalBounds().size.y + 10.f;
 		for (size_t i = 0; i < nextBlockGrid.size(); i++)
 		{

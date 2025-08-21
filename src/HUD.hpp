@@ -8,7 +8,7 @@ namespace Tetris
 	class HUD
 	{
 	public:
-		HUD(float cellSize, sf::FloatRect view);
+		HUD(float cellSize, float centerAxisX);
 
 		void SetNextBlock(const Status& status);
 		void SetScore(uint32_t score);
@@ -21,7 +21,7 @@ namespace Tetris
 		static constexpr size_t s_GridSize = 5;
 	private:
 		float m_CellSize;
-		sf::FloatRect m_View;
+		float m_CenterAxisX;
 
 		const Status* m_NextBlock;
 
