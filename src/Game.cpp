@@ -207,7 +207,7 @@ namespace Tetris
 		if (!positions.has_value())
 			return false;
 
-		if (std::any_of(positions.value().begin(), positions.value().end(),
+		if (std::any_of(positions->begin(), positions->end(),
 			[&](const sf::Vector2u& position) { return position.y >= m_Size.y || GetCell(position); }))
 			return false;
 
@@ -261,7 +261,7 @@ namespace Tetris
 			return;
 
 		RemoveBlock(m_CurrentBlock);
-		m_CurrentBlock._Position.y = fallPosition.value().at(0).y;
+		m_CurrentBlock._Position.y = fallPosition->at(0).y;
 		MoveDownBlock();
 	}
 
