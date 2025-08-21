@@ -1,5 +1,5 @@
 ﻿# MyTetris in C++ SFML
-<img width="349" height="414" alt="Screenshot 2025-08-18 220647" src="https://github.com/user-attachments/assets/c7715dc2-1cdb-44d7-819c-33d2436ebaf8" />
+<img width="350" height="415" alt="Tetris Screenshot" src="https://github.com/user-attachments/assets/41fed1a3-2239-46d3-9f6e-01bfee86f44a" />
 
 # How to build
   1. Clone the git repository:
