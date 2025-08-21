@@ -1,7 +1,6 @@
 #include "Tetris.hpp"
 
 #include "HUD.hpp"
-#include <ctime>
 #include <chrono>
 
 namespace Tetris
@@ -10,8 +9,6 @@ namespace Tetris
 		: m_Window(sf::VideoMode(s_Data._ScreenSize), s_Data._WindowTitle, s_Data._WindowStyle)
 		, m_Game(s_Data._GridSize, s_Data._CellSize, sf::FloatRect(sf::Vector2f(s_Data._ScreenSize.x - s_Data._RightSide, 0.f), sf::Vector2f(s_Data._RightSide, s_Data._ScreenSize.y)))
 	{
-		srand((uint32_t)time(0));
-
 		m_Window.setVerticalSyncEnabled(true);
 	}
 

@@ -44,8 +44,6 @@ namespace Tetris
 		void SaveHighScore(uint32_t highscore) const;
 		uint32_t LoadHighScore() const;
 	private:
-		static int GetRandom(int max);
-	private:
 		std::vector<uint32_t> m_Grid;
 		const sf::Vector2u m_Size;
 		const float m_CellSize;

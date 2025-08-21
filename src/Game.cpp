@@ -3,7 +3,7 @@
 #include <fstream>
 #include <algorithm>
 
-#include <iostream>
+#include "Utils.hpp"
 
 namespace Tetris
 {
@@ -131,8 +131,8 @@ namespace Tetris
 		Status status;
 
 		status._Position = { (m_Size.x / 2) - 1, 1 };
-		status._Type = GetRandom(g_Blocks.size());
-		status._Rotation = GetRandom(g_Blocks[status._Type]._PossibleRotations + 1) - 1;
+		status._Type = Utils::GetRandom(g_Blocks.size());
+		status._Rotation = Utils::GetRandom(g_Blocks[status._Type]._PossibleRotations + 1) - 1;
 
 		return status;
 	}
@@ -374,10 +374,5 @@ namespace Tetris
 		file.close();
 
 		return highscore;
-	}
-
-	int Game::GetRandom(int max)
-	{
-		return (rand() % (std::max(max, 2) - 1)) + 1;
 	}
 }
