@@ -7,15 +7,15 @@
 
 namespace Tetris
 {
-	Game::Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName)
-		: m_Size(size), m_CellSize(cellSize), m_HUD(cellSize, hudCenterAxisX),
+	Game::Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName, const sf::Font& hudFont)
+		: m_Size(size), m_CellSize(cellSize), m_HUD(cellSize, hudCenterAxisX, hudFont),
 		m_Grid(size.x* size.y, 0), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
-		m_GameSpeed(1.f), m_Score(0), m_HighScoreFileName(), m_IsGameOver(false)
+		m_GameSpeed(1.f), m_Score(0), m_HighscoreFileName(), m_IsGameOver(false)
 	{
 		m_HUD.SetNextBlock(m_NextBlock);
 		AddBlock(m_CurrentBlock);
 
-		m_HUD.SetHighScore(LoadHighScore());
+		m_HUD.SetHighscore(LoadHighscore());
 	}
 
 	bool Game::IsRunning() const
@@ -322,8 +322,8 @@ namespace Tetris
 	{
 		m_IsGameOver = true;
 
-		if (LoadHighScore() < m_Score)
-			SaveHighScore(m_Score);
+		if (LoadHighscore() < m_Score)
+			SaveHighscore(m_Score);
 	}
 
 	void Game::Reset()
@@ -333,10 +333,10 @@ namespace Tetris
 		m_GameSpeed = 1.f;
 		m_GameClock.restart();
 
-		if (LoadHighScore() < m_Score)
-			SaveHighScore(m_Score);
+		if (LoadHighscore() < m_Score)
+			SaveHighscore(m_Score);
 		AddScore(-m_Score);
-		m_HUD.SetHighScore(LoadHighScore());
+		m_HUD.SetHighscore(LoadHighscore());
 
 		m_Grid.assign((size_t)(m_Size.x * m_Size.y), 0);
 
@@ -351,7 +351,7 @@ namespace Tetris
 		m_HUD.SetScore(m_Score);
 	}
 
-	void Game::SaveHighScore(uint32_t highscore) const
+	void Game::SaveHighscore(uint32_t highscore) const
 	{
 		std::ofstream file("highscore.txt");
 
@@ -362,7 +362,7 @@ namespace Tetris
 		file.close();
 	}
 
-	uint32_t Game::LoadHighScore() const
+	uint32_t Game::LoadHighscore() const
 	{
 		std::ifstream file("highscore.txt");
 

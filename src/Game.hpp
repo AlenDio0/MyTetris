@@ -9,7 +9,7 @@ namespace Tetris
 	class Game
 	{
 	public:
-		Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName);
+		Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName, const sf::Font& hudFont);
 
 		bool IsRunning() const;
 
@@ -41,8 +41,8 @@ namespace Tetris
 
 		void AddScore(uint32_t score);
 
-		void SaveHighScore(uint32_t highscore) const;
-		uint32_t LoadHighScore() const;
+		void SaveHighscore(uint32_t highscore) const;
+		uint32_t LoadHighscore() const;
 	private:
 		std::vector<uint32_t> m_Grid;
 		const sf::Vector2u m_Size;
@@ -57,7 +57,7 @@ namespace Tetris
 		float m_GameSpeed;
 
 		uint32_t m_Score;
-		std::string_view m_HighScoreFileName;
+		std::string_view m_HighscoreFileName;
 
 		bool m_IsGameOver;
 	};

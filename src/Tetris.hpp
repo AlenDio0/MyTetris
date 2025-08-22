@@ -33,7 +33,9 @@ namespace Tetris
 
 			static inline sf::Color _BackgroundColor = sf::Color(50, 50, 60);
 
-			static inline const char* _HighScoreFileName = "highscore.txt";
+			static inline const char* _HighscoreFileName = "highscore.txt";
+
+			static inline sf::Font _HUDFont = sf::Font("assets/PressStart2P.ttf");
 		} s_Data;
 	};
 }
