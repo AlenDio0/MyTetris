@@ -246,19 +246,7 @@ namespace Tetris
 			m_CurrentBlock._Position.y--;
 			AddBlock(m_CurrentBlock);
 
-			ClearCompletedRows();
-
-			m_CurrentBlock = std::move(m_NextBlock);
-			m_NextBlock = CreateRandomBlock();
-
-			if (!AddBlock(m_CurrentBlock))
-			{
-				GameOver();
-				return;
-			}
-
-			m_GameSpeed *= 0.99f;
-			AddScore(10 / m_GameSpeed);
+			PutNextBlock();
 		}
 	}
 
@@ -270,7 +258,9 @@ namespace Tetris
 
 		RemoveBlock(m_CurrentBlock);
 		m_CurrentBlock._Position.y = fallPosition->at(0).y;
-		MoveDownBlock();
+		AddBlock(m_CurrentBlock);
+
+		PutNextBlock();
 	}
 
 	void Game::ClearCompletedRows()
@@ -278,17 +268,9 @@ namespace Tetris
 		uint32_t rowsCleared = 0;
 		for (uint32_t y = 0; y < m_Size.y; y++)
 		{
-			bool isFull = true;
-			for (uint32_t x = 0; x < m_Size.x; x++)
-			{
-				if (!GetCell({ x, y }))
-				{
-					isFull = false;
-					break;
-				}
-			}
-
-			if (isFull)
+			const auto first = m_Grid.begin() + (size_t)(y * m_Size.x);
+			bool isRowFull = std::none_of(first, first + m_Size.x, [&](uint32_t type) { return !type; });
+			if (isRowFull)
 			{
 				rowsCleared++;
 
@@ -316,6 +298,25 @@ namespace Tetris
 				return 0;
 			}
 			}(rowsCleared) / m_GameSpeed);
+	}
+
+	void Game::PutNextBlock()
+	{
+		ClearCompletedRows();
+
+		m_CurrentBlock = std::move(m_NextBlock);
+		m_NextBlock = CreateRandomBlock();
+
+		if (!AddBlock(m_CurrentBlock))
+		{
+			GameOver();
+			return;
+		}
+
+		m_GameSpeed *= 0.99f;
+		AddScore(25u / m_GameSpeed);
+
+		m_GameClock.restart();
 	}
 
 	void Game::GameOver()

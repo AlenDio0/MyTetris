@@ -36,6 +36,8 @@ namespace Tetris
 		void HardDropBlock();
 		void ClearCompletedRows();
 
+		void PutNextBlock();
+
 		void GameOver();
 		void Reset();
 
