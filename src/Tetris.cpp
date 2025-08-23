@@ -6,9 +6,9 @@
 namespace Tetris
 {
 	Engine::Engine()
-		: m_Window(sf::VideoMode(s_Data._ScreenSize), s_Data._WindowTitle, s_Data._WindowStyle),
-		m_Game(s_Data._GridSize, s_Data._CellSize, s_Data._ScreenSize.x - (s_Data._RightSide / 2.f),
-			s_Data._HighscoreFileName, s_Data._HUDFont)
+		: m_Window(sf::VideoMode(GameData::_ScreenSize), GameData::_WindowTitle, GameData::_WindowStyle),
+		m_Game(GameData::_GridSize, GameData::_CellSize, GameData::_ScreenSize.x - (GameData::_RightSide / 2.f),
+			GameData::_HighscoreFileName, GameData::_HUDFont)
 	{
 		m_Window.setVerticalSyncEnabled(true);
 	}
@@ -25,7 +25,7 @@ namespace Tetris
 
 			m_Game.Update();
 
-			m_Window.clear(s_Data._BackgroundColor);
+			m_Window.clear(GameData::_BackgroundColor);
 
 			m_Game.Draw(m_Window);
 

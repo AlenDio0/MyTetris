@@ -20,22 +20,22 @@ namespace Tetris
 		sf::RenderWindow m_Window;
 		Game m_Game;
 	private:
-		static inline const struct GameData
+		struct GameData
 		{
-			static inline uint32_t _CellSize = 40u;
-			static inline sf::Vector2u _GridSize = { 10u, 20u };
+			static constexpr uint32_t _CellSize = 40u;
+			static constexpr sf::Vector2u _GridSize = { 10u, 20u };
 
-			static inline uint32_t _RightSide = 300u;
+			static constexpr uint32_t _RightSide = 300u;
 
-			static inline sf::Vector2u _ScreenSize = { _GridSize.x * _CellSize + _RightSide, _GridSize.y * _CellSize };
-			static inline const char* _WindowTitle = "MyTetris";
-			static inline uint32_t _WindowStyle = sf::Style::Default;
+			static constexpr sf::Vector2u _ScreenSize = { _GridSize.x * _CellSize + _RightSide, _GridSize.y * _CellSize };
+			static constexpr const char* _WindowTitle = "MyTetris";
+			static constexpr uint32_t _WindowStyle = sf::Style::Default;
 
-			static inline sf::Color _BackgroundColor = sf::Color(50, 50, 60);
+			static constexpr sf::Color _BackgroundColor = sf::Color(50, 50, 60);
 
-			static inline const char* _HighscoreFileName = "highscore.txt";
+			static constexpr const char* _HighscoreFileName = "highscore.txt";
 
-			static inline sf::Font _HUDFont = sf::Font("assets/PressStart2P.ttf");
-		} s_Data;
+			static inline const sf::Font _HUDFont = sf::Font("assets/PressStart2P.ttf");
+		};
 	};
 }
