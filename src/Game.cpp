@@ -10,7 +10,7 @@ namespace Tetris
 	Game::Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName, const sf::Font& hudFont)
 		: m_Size(size), m_CellSize(cellSize), m_HUD(cellSize, hudCenterAxisX, hudFont),
 		m_Grid(size.x* size.y, 0), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
-		m_GameSpeed(1.f), m_Score(0), m_HighscoreFileName(), m_IsGameOver(false)
+		m_GameSpeed(1.f), m_Score(0), m_HighscoreFileName(highscoreFileName), m_IsGameOver(false)
 	{
 		m_HUD.SetNextBlock(m_NextBlock);
 		AddBlock(m_CurrentBlock);
@@ -353,7 +353,8 @@ namespace Tetris
 
 	void Game::SaveHighscore(uint32_t highscore) const
 	{
-		std::ofstream file("highscore.txt");
+		std::ofstream file;
+		file.open(m_HighscoreFileName);
 
 		if (!file.is_open())
 			return;
@@ -364,7 +365,8 @@ namespace Tetris
 
 	uint32_t Game::LoadHighscore() const
 	{
-		std::ifstream file("highscore.txt");
+		std::ifstream file;
+		file.open(m_HighscoreFileName);
 
 		if (!file.is_open())
 			return 0;
