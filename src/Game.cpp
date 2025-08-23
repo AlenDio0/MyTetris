@@ -353,9 +353,7 @@ namespace Tetris
 
 	void Game::SaveHighscore(uint32_t highscore) const
 	{
-		std::ofstream file;
-		file.open(m_HighscoreFileName);
-
+		std::ofstream file(m_HighscoreFileName.data());
 		if (!file.is_open())
 			return;
 
@@ -365,9 +363,7 @@ namespace Tetris
 
 	uint32_t Game::LoadHighscore() const
 	{
-		std::ifstream file;
-		file.open(m_HighscoreFileName);
-
+		std::ifstream file(m_HighscoreFileName.data());
 		if (!file.is_open())
 			return 0;
 
