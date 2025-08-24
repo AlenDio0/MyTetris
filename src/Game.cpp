@@ -9,8 +9,8 @@ namespace Tetris
 {
 	Game::Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName, const sf::Font& hudFont)
 		: m_Size(size), m_CellSize(cellSize), m_HUD(cellSize, hudCenterAxisX, hudFont),
-		m_Grid(size.x* size.y, 0), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
-		m_GameSpeed(1.f), m_Score(0), m_HighscoreFileName(highscoreFileName), m_IsGameOver(false)
+		m_Grid(size.x* size.y, 0u), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
+		m_GameSpeed(1.f), m_Score(0u), m_HighscoreFileName(highscoreFileName), m_ClearBlink(false), m_IsGameOver(false)
 	{
 		m_HUD.SetNextBlock(m_NextBlock);
 		AddBlock(m_CurrentBlock);
@@ -73,6 +73,17 @@ namespace Tetris
 		if (m_IsGameOver)
 			return;
 
+		if (!m_ClearRows.empty())
+		{
+			if (m_ClearClock.getElapsedTime().asSeconds() >= 1.f)
+			{
+				ClearCompletedRows();
+				PutNextBlock();
+			}
+
+			return;
+		}
+
 		if (m_GameClock.getElapsedTime().asSeconds() >= m_GameSpeed)
 			MoveDownBlock();
 	}
@@ -81,7 +92,7 @@ namespace Tetris
 	{
 		DrawGrid(target);
 
-		if (!m_IsGameOver)
+		if (!m_IsGameOver && m_ClearRows.empty())
 			DrawShadow(target);
 
 		m_HUD.Draw(target);
@@ -95,9 +106,22 @@ namespace Tetris
 
 		for (uint32_t y = 0; y < m_Size.y; y++)
 		{
+			bool blink = false;
+			if (!m_ClearRows.empty())
+			{
+				if (m_ClearBlinkClock.getElapsedTime().asSeconds() >= 0.20f)
+				{
+					m_ClearBlinkClock.restart();
+					m_ClearBlink = !m_ClearBlink;
+				}
+
+				blink = m_ClearBlink && std::any_of(m_ClearRows.begin(), m_ClearRows.end(),
+					[&](uint32_t row) { return y == row; });
+			}
+
 			for (uint32_t x = 0; x < m_Size.x; x++)
 			{
-				cellShape.setFillColor(g_BlockColors[GetCell({ x, y })]);
+				cellShape.setFillColor(!blink ? g_BlockColors[GetCell({ x, y })] : sf::Color::White);
 				cellShape.setPosition({ x * m_CellSize, y * m_CellSize });
 
 				target.draw(cellShape);
@@ -246,7 +270,8 @@ namespace Tetris
 			m_CurrentBlock._Position.y--;
 			AddBlock(m_CurrentBlock);
 
-			PutNextBlock();
+			if (!SearchCompletedRows())
+				PutNextBlock();
 		}
 	}
 
@@ -260,28 +285,44 @@ namespace Tetris
 		m_CurrentBlock._Position.y = fallPosition->at(0).y;
 		AddBlock(m_CurrentBlock);
 
-		PutNextBlock();
+		if (!SearchCompletedRows())
+			PutNextBlock();
+	}
+
+	bool Game::SearchCompletedRows()
+	{
+		for (uint32_t row = 0; row < m_Size.y; row++)
+		{
+			const auto first = m_Grid.begin() + (size_t)(row * m_Size.x);
+			bool isRowFull = std::none_of(first, first + m_Size.x, [&](uint32_t type) { return !type; });
+
+			if (isRowFull)
+				m_ClearRows.emplace_back(row);
+		}
+
+		if (m_ClearRows.empty())
+			return false;
+
+		m_ClearClock.restart();
+		m_ClearBlinkClock.restart();
+		m_ClearBlink = false;
+		return true;
 	}
 
 	void Game::ClearCompletedRows()
 	{
-		uint32_t rowsCleared = 0;
-		for (uint32_t y = 0; y < m_Size.y; y++)
+		for (uint32_t row : m_ClearRows)
 		{
-			const auto first = m_Grid.begin() + (size_t)(y * m_Size.x);
-			bool isRowFull = std::none_of(first, first + m_Size.x, [&](uint32_t type) { return !type; });
-			if (isRowFull)
-			{
-				rowsCleared++;
+			for (uint32_t x = 0; x < m_Size.x; x++)
+				SetCell({ x, row }, 0);
 
+			for (int y = row; y >= 0; y--)
 				for (uint32_t x = 0; x < m_Size.x; x++)
-					SetCell({ x, y }, 0);
-
-				for (int row = y; row >= 0; row--)
-					for (uint32_t x = 0; x < m_Size.x; x++)
-						SetCell({ x, (uint32_t)row }, GetCell({ x, (uint32_t)row - 1 }));
-			}
+					SetCell({ x, (uint32_t)y }, GetCell({ x, (uint32_t)y - 1 }));
 		}
+
+		size_t rowsCleared = m_ClearRows.size();
+		m_ClearRows.erase(m_ClearRows.begin(), m_ClearRows.end());
 
 		AddScore([](uint32_t rows) {
 			switch (rows)
@@ -302,8 +343,6 @@ namespace Tetris
 
 	void Game::PutNextBlock()
 	{
-		ClearCompletedRows();
-
 		m_CurrentBlock = std::move(m_NextBlock);
 		m_NextBlock = CreateRandomBlock();
 

@@ -3,6 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include "Block.hpp"
 #include "HUD.hpp"
+#include <vector>
+#include <array>
+#include <optional>
 
 namespace Tetris
 {
@@ -34,6 +37,7 @@ namespace Tetris
 
 		void MoveDownBlock();
 		void HardDropBlock();
+		bool SearchCompletedRows();
 		void ClearCompletedRows();
 
 		void PutNextBlock();
@@ -60,6 +64,11 @@ namespace Tetris
 
 		uint32_t m_Score;
 		std::string_view m_HighscoreFileName;
+
+		sf::Clock m_ClearClock;
+		mutable sf::Clock m_ClearBlinkClock;
+		mutable bool m_ClearBlink;
+		std::vector<uint32_t> m_ClearRows;
 
 		bool m_IsGameOver;
 	};
