@@ -7,7 +7,7 @@
 
 namespace Tetris
 {
-	Game::Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, std::string_view highscoreFileName, const sf::Font& hudFont)
+	Game::Game(sf::Vector2u size, float cellSize, float hudCenterAxisX, const char* highscoreFileName, const sf::Font& hudFont) noexcept
 		: m_Size(size), m_CellSize(cellSize), m_HUD(cellSize, hudCenterAxisX, hudFont),
 		m_Grid(size.x* size.y, 0u), m_CurrentBlock(CreateRandomBlock()), m_NextBlock(CreateRandomBlock()),
 		m_GameSpeed(1.f), m_Score(0u), m_HighscoreFileName(highscoreFileName), m_ClearBlink(false), m_IsGameOver(false)
@@ -15,10 +15,12 @@ namespace Tetris
 		m_HUD.SetNextBlock(m_NextBlock);
 		AddBlock(m_CurrentBlock);
 
+		m_ClearRows.reserve(4);
+
 		m_HUD.SetHighscore(LoadHighscore());
 	}
 
-	bool Game::IsRunning() const
+	bool Game::IsRunning() const noexcept
 	{
 		return !m_IsGameOver;
 	}
@@ -48,7 +50,7 @@ namespace Tetris
 			break;
 		case sf::Keyboard::Key::Up:
 		case sf::Keyboard::Key::W:
-			newStatus._Rotation = (newStatus._Rotation + 1) % g_Blocks[newStatus._Type]._PossibleRotations;
+			newStatus._Rotation = (newStatus._Rotation + 1) % g_Blocks.at(newStatus._Type)._PossibleRotations;
 			break;
 		case sf::Keyboard::Key::Down:
 		case sf::Keyboard::Key::S:
@@ -68,7 +70,7 @@ namespace Tetris
 			AddBlock(m_CurrentBlock);
 	}
 
-	void Game::Update()
+	void Game::Update() noexcept
 	{
 		if (m_IsGameOver)
 			return;
@@ -88,7 +90,7 @@ namespace Tetris
 			MoveDownBlock();
 	}
 
-	void Game::Draw(sf::RenderTarget& target) const
+	void Game::Draw(sf::RenderTarget& target) const noexcept
 	{
 		DrawGrid(target);
 
@@ -121,7 +123,7 @@ namespace Tetris
 
 			for (uint32_t x = 0; x < m_Size.x; x++)
 			{
-				cellShape.setFillColor(!blink ? g_BlockColors[GetCell({ x, y })] : sf::Color::White);
+				cellShape.setFillColor(!blink ? g_BlockColors.at(GetCell({ x, y })) : sf::Color::White);
 				cellShape.setPosition({ x * m_CellSize, y * m_CellSize });
 
 				target.draw(cellShape);
@@ -138,7 +140,7 @@ namespace Tetris
 		auto shadowPositions = GetFallPositions();
 		if (shadowPositions.has_value())
 		{
-			sf::Color shadowColor = g_BlockColors[m_CurrentBlock._Type];
+			sf::Color shadowColor = g_BlockColors.at(m_CurrentBlock._Type);
 			shadowColor.a /= 3;
 			cellShape.setFillColor(shadowColor);
 
@@ -156,13 +158,13 @@ namespace Tetris
 
 		status._Position = { (m_Size.x / 2) - 1, 1 };
 		status._Type = Utils::GetRandom(g_Blocks.size());
-		status._Rotation = Utils::GetRandom(g_Blocks[status._Type]._PossibleRotations + 1) - 1;
+		status._Rotation = Utils::GetRandom(g_Blocks.at(status._Type)._PossibleRotations + 1) - 1;
 
 		return status;
 	}
 
 
-	size_t Game::GetIndex(sf::Vector2u position) const
+	size_t Game::GetIndex(sf::Vector2u position) const noexcept
 	{
 		return (size_t)position.y * m_Size.x + position.x;
 	}
@@ -193,17 +195,18 @@ namespace Tetris
 		auto relativePositions = Utils::GetRelativePositions(status);
 		for (size_t i = 0; i < relativePositions.size(); i++)
 		{
-			sf::Vector2u newPosition(blockPosition.x + relativePositions[i].x, blockPosition.y + relativePositions[i].y);
+			const sf::Vector2i& relativePosition = relativePositions.at(i);
+			sf::Vector2u newPosition(blockPosition.x + relativePosition.x, blockPosition.y + relativePosition.y);
 			if (newPosition.x >= m_Size.x || newPosition.y >= m_Size.y)
 				return std::nullopt;
 
-			positions[i] = newPosition;
+			positions.at(i) = newPosition;
 		}
 
 		return positions;
 	}
 
-	std::optional<std::array<sf::Vector2u, 4>> Game::GetFallPositions() const
+	std::optional<std::array<sf::Vector2u, 4>> Game::GetFallPositions() const noexcept
 	{
 		auto currentPositions = GetPositions(m_CurrentBlock);
 		if (!currentPositions.has_value())
@@ -233,7 +236,7 @@ namespace Tetris
 		return GetPositions(fallBlock);
 	}
 
-	bool Game::AddBlock(const Status& status)
+	bool Game::AddBlock(const Status& status) noexcept
 	{
 		auto positions = GetPositions(status);
 		if (!positions.has_value())
@@ -249,7 +252,7 @@ namespace Tetris
 		return true;
 	}
 
-	void Game::RemoveBlock(const Status& status)
+	void Game::RemoveBlock(const Status& status) noexcept
 	{
 		auto positions = GetPositions(status);
 		if (!positions.has_value())
@@ -259,7 +262,7 @@ namespace Tetris
 			SetCell(position, 0);
 	}
 
-	void Game::MoveDownBlock()
+	void Game::MoveDownBlock() noexcept
 	{
 		m_GameClock.restart();
 		RemoveBlock(m_CurrentBlock);
@@ -289,7 +292,7 @@ namespace Tetris
 			PutNextBlock();
 	}
 
-	bool Game::SearchCompletedRows()
+	bool Game::SearchCompletedRows() noexcept
 	{
 		for (uint32_t row = 0; row < m_Size.y; row++)
 		{
@@ -309,7 +312,7 @@ namespace Tetris
 		return true;
 	}
 
-	void Game::ClearCompletedRows()
+	void Game::ClearCompletedRows() noexcept
 	{
 		for (uint32_t row : m_ClearRows)
 		{
@@ -341,7 +344,7 @@ namespace Tetris
 			}(rowsCleared) / m_GameSpeed);
 	}
 
-	void Game::PutNextBlock()
+	void Game::PutNextBlock() noexcept
 	{
 		m_CurrentBlock = std::move(m_NextBlock);
 		m_NextBlock = CreateRandomBlock();
@@ -352,13 +355,14 @@ namespace Tetris
 			return;
 		}
 
-		m_GameSpeed *= 0.99f;
+		// Make the game 1% faster every time a new block is placed.
+		m_GameSpeed /= 1.01f;
 		AddScore(25u / m_GameSpeed);
 
 		m_GameClock.restart();
 	}
 
-	void Game::GameOver()
+	void Game::GameOver() noexcept
 	{
 		m_IsGameOver = true;
 
@@ -366,7 +370,7 @@ namespace Tetris
 			SaveHighscore(m_Score);
 	}
 
-	void Game::Reset()
+	void Game::Reset() noexcept
 	{
 		m_IsGameOver = false;
 
@@ -385,15 +389,15 @@ namespace Tetris
 		AddBlock(m_CurrentBlock);
 	}
 
-	void Game::AddScore(uint32_t score)
+	void Game::AddScore(uint32_t score) noexcept
 	{
 		m_Score += score;
 		m_HUD.SetScore(m_Score);
 	}
 
-	void Game::SaveHighscore(uint32_t highscore) const
+	void Game::SaveHighscore(uint32_t highscore) const noexcept
 	{
-		std::ofstream file(m_HighscoreFileName.data());
+		std::ofstream file(m_HighscoreFileName);
 		if (!file.is_open())
 			return;
 
@@ -401,9 +405,9 @@ namespace Tetris
 		file.close();
 	}
 
-	uint32_t Game::LoadHighscore() const
+	uint32_t Game::LoadHighscore() const noexcept
 	{
-		std::ifstream file(m_HighscoreFileName.data());
+		std::ifstream file(m_HighscoreFileName);
 		if (!file.is_open())
 			return 0;
 

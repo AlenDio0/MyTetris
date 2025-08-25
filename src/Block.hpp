@@ -7,6 +7,11 @@ namespace Tetris
 {
 	struct Block
 	{
+		constexpr Block(uint32_t possibleRotations, std::array<sf::Vector2i, 3> relativePositions) noexcept
+			: _PossibleRotations(possibleRotations), _RelativePositions(relativePositions)
+		{
+		}
+
 		uint32_t _PossibleRotations = 1;
 		std::array<sf::Vector2i, 3> _RelativePositions;
 	};
@@ -18,26 +23,26 @@ namespace Tetris
 		uint32_t _Rotation = 0;
 	};
 
-	constexpr inline std::array<Block, 8> g_Blocks = {
-		Block{ 1, { { { 0, 0 }, { 0, 0 }, { 0, 0 } } } },		// None
-		Block{ 2, { { { 0, -1 }, { 0, 1 }, { 0, 2 } } } },		// I
-		Block{ 4, { { { 0, -1 }, { 0, 1 }, { 1, 1 } } } },		// L
-		Block{ 4, { { { 0, -1 }, { 0, 1 }, { -1, 1 } } } },		// J
-		Block{ 2, { { { 0, -1 }, { 1, 0 }, { 1, 1 } } } },		// S
-		Block{ 2, { { { 0, -1 }, { -1, 0 }, { -1, 1 } } } },	// Z
-		Block{ 4, { { { 1, 0 }, { 0, -1 }, { 0, 1 } } } },		// T
-		Block{ 1, { { { 1, 0 }, { 1, -1 }, { 0, -1 } } } }		// O
+	constexpr inline std::array<const Block, 8> g_Blocks = {
+		Block(1, { { { 0, 0 }, { 0, 0 }, { 0, 0 } } }),			// None
+		Block(2, { { { 0, -1 }, { 0, 1 }, { 0, 2 } } }),		// I
+		Block(4, { { { 0, -1 }, { 0, 1 }, { 1, 1 } } }),		// L
+		Block(4, { { { 0, -1 }, { 0, 1 }, { -1, 1 } } }),		// J
+		Block(2, { { { 0, -1 }, { 1, 0 }, { 1, 1 } } }),		// S
+		Block(2, { { { 0, -1 }, { -1, 0 }, { -1, 1 } } }),		// Z
+		Block(4, { { { 1, 0 }, { 0, -1 }, { 0, 1 } } }),		// T
+		Block(1, { { { 1, 0 }, { 1, -1 }, { 0, -1 } } })		// O
 	};
 
 	constexpr inline std::array<const sf::Color, 8> g_BlockColors = {
-		sf::Color(30, 30, 40),		// None
-		sf::Color(0, 255, 255),		// I
-		sf::Color(255, 165, 0),		// L
-		sf::Color(0, 0, 255),		// J
-		sf::Color(0, 255, 0),		// S
-		sf::Color(255, 0, 0),		// Z
-		sf::Color(128, 0, 128),		// T
-		sf::Color(255, 255, 0)		// O
+		sf::Color(30, 30, 40),									// None
+		sf::Color(0, 255, 255),									// I
+		sf::Color(255, 165, 0),									// L
+		sf::Color(0, 0, 255),									// J
+		sf::Color(0, 255, 0),									// S
+		sf::Color(255, 0, 0),									// Z
+		sf::Color(128, 0, 128),									// T
+		sf::Color(255, 255, 0)									// O
 	};
 
 	namespace Utils
