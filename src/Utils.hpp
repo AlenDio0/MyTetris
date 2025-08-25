@@ -5,20 +5,19 @@
 
 namespace Tetris::Utils
 {
-	static inline struct RandomData
+	struct RandomData
 	{
-		inline RandomData()
+		inline RandomData() noexcept
 		{
-			s_Engine.seed((uint32_t)time(0));
+			_Engine.seed((uint32_t)time(nullptr));
 		}
 
-		static inline std::default_random_engine s_Engine;
-		static inline std::uniform_int_distribution<uint32_t> s_Distribution;
-	} s_Random;
+		std::default_random_engine _Engine;
+		std::uniform_int_distribution<uint32_t> _Distribution;
+	} g_Random;
 
-	static inline int GetRandom(int max)
+	inline int GetRandom(int max) noexcept
 	{
-		s_Random.s_Engine.seed(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
-		return (s_Random.s_Distribution(s_Random.s_Engine) % (std::max(max, 2) - 1)) + 1;
+		return (g_Random._Distribution(g_Random._Engine) % (std::max(max, 2) - 1)) + 1;
 	}
 }

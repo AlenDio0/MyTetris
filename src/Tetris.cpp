@@ -5,27 +5,28 @@
 
 namespace Tetris
 {
-	Engine::Engine()
-		: m_Window(sf::VideoMode(GameData::_ScreenSize), GameData::_WindowTitle, GameData::_WindowStyle),
-		m_Game(GameData::_GridSize, GameData::_CellSize, GameData::_ScreenSize.x - (GameData::_RightSide / 2.f),
-			GameData::_HighscoreFileName, GameData::_HUDFont)
+	Engine::Engine() noexcept
+		: m_Window(sf::VideoMode(GameData::s_ScreenSize), GameData::s_WindowTitle, GameData::s_WindowStyle),
+		m_Game(GameData::s_GridSize, GameData::s_CellSize, GameData::s_ScreenSize.x - (GameData::s_HUDSizeX / 2.f),
+			GameData::s_HighscoreFileName, GameData::s_HUDFont)
 	{
 		m_Window.setVerticalSyncEnabled(true);
 	}
 
-	void Engine::RunGame()
+	void Engine::RunGame() noexcept
 	{
 		while (m_Window.isOpen())
 		{
 			{
 				using namespace std::chrono_literals;
+				// Why 20ms? Trial and error.
 				while (auto event = m_Game.IsRunning() ? m_Window.pollEvent() : m_Window.waitEvent({ 20ms }))
 					OnEvent(event);
 			}
 
 			m_Game.Update();
 
-			m_Window.clear(GameData::_BackgroundColor);
+			m_Window.clear(GameData::s_BackgroundColor);
 
 			m_Game.Draw(m_Window);
 
@@ -33,7 +34,7 @@ namespace Tetris
 		}
 	}
 
-	void Engine::OnEvent(const std::optional<sf::Event>& event)
+	void Engine::OnEvent(const std::optional<sf::Event>& event) noexcept
 	{
 		if (event->is<sf::Event::Closed>())
 		{
@@ -41,22 +42,22 @@ namespace Tetris
 			return;
 		}
 
-		if (const auto* resize = event->getIf<sf::Event::Resized>())
+		if (const auto* resizedEvent = event->getIf<sf::Event::Resized>())
 		{
 			sf::View view = m_Window.getView();
-			view.setSize((sf::Vector2f)resize->size);
+			view.setSize((sf::Vector2f)resizedEvent->size);
 			m_Window.setView(view);
 		}
 
-		if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+		if (const auto* keyPressedEvent = event->getIf<sf::Event::KeyPressed>())
 		{
-			if (keyPressed->code == sf::Keyboard::Key::Escape)
+			if (keyPressedEvent->code == sf::Keyboard::Key::Escape)
 			{
 				m_Window.close();
 				return;
 			}
 
-			m_Game.HandleInput(keyPressed->code);
+			m_Game.HandleInput(keyPressedEvent->code);
 		}
 	}
 }

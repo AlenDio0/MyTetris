@@ -8,20 +8,20 @@ namespace Tetris
 	class HUD
 	{
 	public:
-		HUD(float cellSize, float centerAxisX, const sf::Font& font, uint32_t charSize = 24u);
+		HUD(float cellSize, float centerAxisX, const sf::Font& font, uint32_t charSize = 24u) noexcept;
 
-		void SetNextBlock(const Status& status);
-		void SetScore(uint32_t score);
-		void SetHighscore(uint32_t highscore);
+		void SetNextBlock(const Status& status) noexcept;
+		void SetScore(uint32_t score) noexcept;
+		void SetHighscore(uint32_t highscore) noexcept;
 
-		void Draw(sf::RenderTarget& target) const;
+		void Draw(sf::RenderTarget& target) const noexcept;
 	private:
-		void DrawNextBlock(sf::RenderTarget& target) const;
+		void DrawNextBlock(sf::RenderTarget& target) const noexcept;
 	private:
 		static constexpr size_t s_GridSize = 5;
 	private:
-		float m_CellSize;
-		float m_CenterAxisX;
+		const float m_CellSize;
+		const float m_CenterAxisX;
 
 		const Status* m_NextBlock;
 
